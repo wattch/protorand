@@ -223,6 +223,6 @@ func (p *ProtoRand) chooseOneOfFieldRandomly(oneOf protoreflect.OneofDescriptor)
 	if ln <= 1 {
 		return oneOf.Fields().Get(0)
 	}
-	index := p.rand.Intn(ln - 1)
+	index := p.rand.Intn(ln)
 	return oneOf.Fields().Get(index)
 }

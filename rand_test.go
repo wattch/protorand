@@ -87,3 +87,41 @@ func TestEmbedValues(t *testing.T) {
 		t.Errorf("Field SomeOneOf is not set")
 	}
 }
+
+// Ensure that both OneOf variations can actually be generated.
+func TestOneOf(t *testing.T) {
+	p := New()
+	p.Seed(0)
+
+	input := &testpb.TestMessage{}
+
+	var gotIntOneOf, gotStrOneOf bool
+
+	for i := 0; i < 1000; i++ {
+		res, err := p.Gen(input)
+		if err != nil {
+			t.Errorf("unexpected error: %v", err)
+		}
+
+		got := res.(*testpb.TestMessage)
+		switch got.SomeOneOf.(type) {
+		case *testpb.TestMessage_OneOfInt32:
+			gotIntOneOf = true
+		case *testpb.TestMessage_OneOfStr:
+			gotStrOneOf = true
+		default:
+			t.Fatalf("bad SomeOneOf type %T", got.SomeOneOf)
+		}
+
+		if gotIntOneOf && gotStrOneOf {
+			break
+		}
+	}
+
+	if !gotIntOneOf {
+		t.Fatalf("never generated a proto with SomeOneOf's Int32 variation")
+	}
+	if !gotStrOneOf {
+		t.Fatalf("never generated a proto with SomeOneOf's String variation")
+	}
+}
